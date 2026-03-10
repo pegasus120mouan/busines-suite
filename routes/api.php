@@ -76,7 +76,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('products', ProductController::class)->names('api.products');
 
     // Warehouses
-    Route::apiResource('warehouses', WarehouseController::class);
+    Route::apiResource('warehouses', WarehouseController::class)->names('api.warehouses');
 
     // Stock Management
     Route::prefix('stock')->middleware('permission:view_stock')->group(function () {
