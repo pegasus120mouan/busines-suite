@@ -66,13 +66,34 @@ class DashboardController extends Controller
             ->get();
 
         // Top customers by revenue
-        $topCustomers = Customer::select('customers.*')
+        $topCustomers = Customer::select([
+                'customers.id',
+                'customers.first_name',
+                'customers.last_name',
+                'customers.email',
+                'customers.phone',
+                'customers.company_name',
+                'customers.tenant_id',
+                'customers.created_at',
+                'customers.updated_at'
+            ])
             ->selectRaw('COALESCE(SUM(invoices.total), 0) as total_revenue')
             ->leftJoin('invoices', function ($join) {
                 $join->on('customers.id', '=', 'invoices.customer_id')
                     ->where('invoices.status', '=', 'paid');
             })
-            ->groupBy('customers.id')
+            ->whereNull('customers.deleted_at')
+            ->groupBy([
+                'customers.id',
+                'customers.first_name',
+                'customers.last_name',
+                'customers.email',
+                'customers.phone',
+                'customers.company_name',
+                'customers.tenant_id',
+                'customers.created_at',
+                'customers.updated_at'
+            ])
             ->orderByDesc('total_revenue')
             ->limit(5)
             ->get();
