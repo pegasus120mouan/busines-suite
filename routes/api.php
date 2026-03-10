@@ -60,7 +60,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     // Users
     Route::apiResource('users', UserController::class)
-        ->middleware('permission:view_users|create_users|edit_users|delete_users');
+        ->middleware('permission:view_users|create_users|edit_users|delete_users')->names('api.users');
 
     // Customers
     Route::post('customers/{id}/restore', [CustomerController::class, 'restore'])
@@ -138,10 +138,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     // Product Categories
     Route::get('product-categories/tree', [ProductCategoryController::class, 'tree']);
-    Route::apiResource('product-categories', ProductCategoryController::class);
+    Route::apiResource('product-categories', ProductCategoryController::class)->names('api.product-categories');
 
     // Expense Categories
-    Route::apiResource('expense-categories', ExpenseCategoryController::class);
+    Route::apiResource('expense-categories', ExpenseCategoryController::class)->names('api.expense-categories');
 
     // Purchase Orders
     Route::prefix('purchase-orders')->group(function () {
@@ -152,7 +152,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('{purchaseOrder}/receive', [PurchaseOrderController::class, 'receive'])
             ->middleware('permission:edit_purchase_orders');
     });
-    Route::apiResource('purchase-orders', PurchaseOrderController::class);
+    Route::apiResource('purchase-orders', PurchaseOrderController::class)->names('api.purchase-orders');
 
     // Tenant Settings
     Route::prefix('tenant')->middleware('permission:view_settings')->group(function () {
@@ -175,7 +175,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     // Tax Rates
     Route::apiResource('tax-rates', TaxRateController::class)
-        ->middleware('permission:view_settings');
+        ->middleware('permission:view_settings')->names('api.tax-rates');
 
     // Number Sequences
     Route::prefix('number-sequences')->middleware('permission:view_settings')->group(function () {
