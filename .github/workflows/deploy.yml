@@ -1,4 +1,4 @@
-name: Deploy Laravel to VPS
+name: Deploy Business Suite to VPS
 
 on:
   push:
@@ -8,7 +8,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy via SSH
+      - name: Deploy Business Suite via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -17,17 +17,28 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             set -e
+            echo "🚀 Deploying Business Suite..."
             cd "${{ secrets.APP_DIR }}"
 
             git config --global --add safe.directory "${{ secrets.APP_DIR }}"
 
+            echo "📥 Pulling latest changes..."
             git fetch --all
             git reset --hard origin/main
 
+            echo "📦 Installing dependencies..."
             composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
 
+            echo "🗄️ Running migrations..."
             php artisan migrate --force
 
+            echo "🔧 Caching configuration..."
             php artisan config:cache
             php artisan route:cache
             php artisan view:cache
+            php artisan event:cache
+
+            echo "🧹 Clearing old cache..."
+            php artisan cache:clear
+
+            echo "✅ Business Suite deployed successfully!"
