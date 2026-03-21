@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../.."
+		},
+		{
+			"path": "../../../nexaErp"
+		},
+		{
+			"path": "../../../saas-admin"
+		}
+	],
+	"settings": {}
+}

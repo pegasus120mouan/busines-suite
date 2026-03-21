@@ -22,6 +22,15 @@ use App\Http\Controllers\Web\SupplierController;
 use App\Http\Controllers\Web\TaxRateController;
 use App\Http\Controllers\Web\UserController;
 use App\Http\Controllers\Web\WarehouseController;
+use App\Http\Controllers\Web\EmployeeController;
+use App\Http\Controllers\Web\DepartmentController;
+use App\Http\Controllers\Web\ContractController;
+use App\Http\Controllers\Web\LeaveController;
+use App\Http\Controllers\Web\AttendanceController;
+use App\Http\Controllers\Web\PayslipController;
+use App\Http\Controllers\Web\DirectionController;
+use App\Http\Controllers\Web\HrRoleController;
+use App\Http\Controllers\Web\PosteController;
 use Illuminate\Support\Facades\Route;
 
 // Redirect root to login
@@ -138,4 +147,47 @@ Route::middleware(['auth'])->group(function () {
     Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::put('settings', [SettingsController::class, 'update'])->name('settings.update');
     Route::delete('settings/logo', [SettingsController::class, 'deleteLogo'])->name('settings.delete-logo');
+
+    // HR Module
+    Route::prefix('hr')->name('hr.')->group(function () {
+        // Employees
+        Route::resource('employees', EmployeeController::class);
+
+        // Departments
+        Route::resource('departments', DepartmentController::class);
+
+        // Contracts
+        Route::post('contracts/{contract}/activate', [ContractController::class, 'activate'])->name('contracts.activate');
+        Route::resource('contracts', ContractController::class);
+
+        // Leaves
+        Route::post('leaves/{leave}/approve', [LeaveController::class, 'approve'])->name('leaves.approve');
+        Route::post('leaves/{leave}/refuse', [LeaveController::class, 'refuse'])->name('leaves.refuse');
+        Route::resource('leaves', LeaveController::class)->except(['edit', 'update']);
+
+        // Attendances
+        Route::post('attendances/check-in', [AttendanceController::class, 'checkIn'])->name('attendances.check-in');
+        Route::post('attendances/check-out', [AttendanceController::class, 'checkOut'])->name('attendances.check-out');
+        Route::resource('attendances', AttendanceController::class)->except(['edit', 'update', 'show']);
+
+        // Payslips
+        Route::post('payslips/{payslip}/confirm', [PayslipController::class, 'confirm'])->name('payslips.confirm');
+        Route::post('payslips/{payslip}/pay', [PayslipController::class, 'pay'])->name('payslips.pay');
+        Route::resource('payslips', PayslipController::class);
+
+        // HR Roles
+        Route::post('roles/{role}/assignments', [HrRoleController::class, 'addAssignment'])->name('roles.assignments.store');
+        Route::delete('roles/{role}/assignments/{assignment}', [HrRoleController::class, 'removeAssignment'])->name('roles.assignments.destroy');
+        Route::resource('roles', HrRoleController::class);
+
+        // Directions
+        Route::resource('directions', DirectionController::class);
+
+        // Postes
+        Route::resource('postes', PosteController::class)->except(['show']);
+
+        // API pour les selects dynamiques
+        Route::get('api/directions/{direction}/departments', [DepartmentController::class, 'getByDirection'])->name('api.departments.by-direction');
+        Route::get('api/departments/{department}/postes', [PosteController::class, 'getByDepartment'])->name('api.postes.by-department');
+    });
 });
