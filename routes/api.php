@@ -33,6 +33,7 @@ use Illuminate\Support\Facades\Route;
 // Provisioning API (called by saas-admin)
 Route::prefix('provisioning')->group(function () {
     Route::post('tenants', [ProvisioningController::class, 'createTenant']);
+    Route::post('tenants/{tenant}/reset-password', [ProvisioningController::class, 'resetPassword']);
 });
 
 // Public routes

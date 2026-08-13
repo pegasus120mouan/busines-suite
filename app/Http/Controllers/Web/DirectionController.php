@@ -103,15 +103,26 @@ class DirectionController extends Controller
                 $initials .= strtoupper(mb_substr($word, 0, 1));
             }
         }
-        
-        $count = Direction::where('code', 'like', $initials . '-%')->count() + 1;
+
+        $tenantId = auth()->user()->tenant_id;
+
+        $count = Direction::withoutGlobalScopes()
+            ->withTrashed()
+            ->where('tenant_id', $tenantId)
+            ->where('code', 'like', $initials . '-%')
+            ->count() + 1;
+
         $code = $initials . '-' . str_pad($count, 3, '0', STR_PAD_LEFT);
-        
-        while (Direction::where('code', $code)->exists()) {
+
+        while (Direction::withoutGlobalScopes()
+            ->withTrashed()
+            ->where('tenant_id', $tenantId)
+            ->where('code', $code)
+            ->exists()) {
             $count++;
             $code = $initials . '-' . str_pad($count, 3, '0', STR_PAD_LEFT);
         }
-        
+
         return $code;
     }
 }

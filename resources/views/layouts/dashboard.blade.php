@@ -352,7 +352,9 @@
                             @php
                                 $tenant = auth()->user()->tenant;
                                 $isOnTrial = $tenant->trial_ends_at && $tenant->trial_ends_at->isFuture();
-                                $daysLeft = $isOnTrial ? (int) ceil(now()->diffInDays($tenant->trial_ends_at, false)) : 0;
+                                $daysLeft = $isOnTrial ? max(0, (int) ceil(now()->diffInDays($tenant->trial_ends_at, false))) : 0;
+                                $trialTotalDays = $isOnTrial ? max(1, (int) $tenant->created_at->diffInDays($tenant->trial_ends_at)) : 14;
+                                $trialProgress = $isOnTrial ? min(100, max(0, (int) round(($daysLeft / $trialTotalDays) * 100))) : 0;
                                 $planLabels = [
                                     'free' => 'Gratuit',
                                     'starter' => 'Starter',
@@ -362,13 +364,14 @@
                                 $planLabel = $planLabels[$tenant->plan] ?? ucfirst($tenant->plan);
                             @endphp
                             @if($isOnTrial)
-                                <div class="flex items-center gap-2 px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-lg">
-                                    <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="flex items-center gap-2.5 px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-lg" title="{{ $daysLeft }} jour{{ $daysLeft > 1 ? 's' : '' }} restant{{ $daysLeft > 1 ? 's' : '' }}">
+                                    <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
-                                    <span class="text-sm font-medium text-amber-800">
-                                        Démo · {{ $daysLeft }} jour{{ $daysLeft > 1 ? 's' : '' }} restant{{ $daysLeft > 1 ? 's' : '' }}
-                                    </span>
+                                    <span class="text-sm font-medium text-amber-800 shrink-0">Démo</span>
+                                    <div class="w-28 h-2 bg-amber-200 rounded-full overflow-hidden">
+                                        <div class="h-full bg-amber-500 rounded-full transition-all duration-500" style="width: {{ $trialProgress }}%"></div>
+                                    </div>
                                 </div>
                             @else
                                 <div class="flex items-center gap-2 px-3 py-1.5 bg-primary-50 border border-primary-200 rounded-lg">

@@ -92,4 +92,46 @@ class ProvisioningController extends Controller
             ], 500);
         }
     }
+
+    public function resetPassword(string $tenantId): JsonResponse
+    {
+        $tenant = Tenant::find($tenantId);
+
+        if (!$tenant) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tenant not found',
+            ], 404);
+        }
+
+        $user = User::where('tenant_id', $tenant->id)
+            ->whereHas('roles', fn ($q) => $q->where('name', 'admin'))
+            ->first();
+
+        if (!$user) {
+            $user = User::where('tenant_id', $tenant->id)->first();
+        }
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No user found for this tenant',
+            ], 404);
+        }
+
+        $password = Str::random(12);
+        $user->update(['password' => Hash::make($password)]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Password reset successfully',
+            'data' => [
+                'tenant_id' => $tenant->id,
+                'email' => $user->email,
+                'password' => $password,
+                'name' => $user->name,
+                'company' => $tenant->name,
+            ],
+        ]);
+    }
 }
