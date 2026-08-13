@@ -9,6 +9,7 @@ use App\Http\Controllers\Web\ExpenseController;
 use App\Http\Controllers\Web\ImportExportController;
 use App\Http\Controllers\Web\InvoiceController;
 use App\Http\Controllers\Web\ProductController;
+use App\Http\Controllers\Web\ProspectController;
 use App\Http\Controllers\Web\QuoteController;
 use App\Http\Controllers\Web\NotificationController;
 use App\Http\Controllers\Web\ProductCategoryController;
@@ -55,6 +56,11 @@ Route::middleware(['auth'])->group(function () {
 
     // Customers
     Route::resource('customers', CustomerController::class);
+
+    // Prospects
+    Route::resource('prospects', ProspectController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::put('prospects-hsms-settings', [ProspectController::class, 'updateHsmsSettings'])->name('prospects.hsms-settings');
+    Route::post('prospects/{prospect}/send-sms', [ProspectController::class, 'sendSms'])->name('prospects.send-sms');
 
     // Suppliers
     Route::resource('suppliers', SupplierController::class);

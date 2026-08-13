@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'hsms' => [
+        'base_url' => env('HSMS_BASE_URL', 'https://www.hsms.ci/api'),
+    ],
+
 ];

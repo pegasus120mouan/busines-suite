@@ -46,7 +46,7 @@
                     Tableau de bord
                 </a>
 
-                @if($canAccess('clients') || $canAccess('fournisseurs') || $canAccess('devis') || $canAccess('factures') || $canAccess('paiements'))
+                @if($canAccess('clients') || $canAccess('fournisseurs') || $canAccess('devis') || $canAccess('factures') || $canAccess('paiements') || $canAccess('prospects'))
                 <div class="pt-4">
                     <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Commercial</p>
                 </div>
@@ -58,6 +58,15 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                     </svg>
                     Clients
+                </a>
+                @endif
+
+                @if($canAccess('clients') || $canAccess('prospects'))
+                <a href="{{ route('prospects.index') }}" class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg {{ request()->routeIs('prospects.*') ? 'bg-primary-50 text-primary-700' : 'text-gray-700 hover:bg-gray-100' }}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                    </svg>
+                    Prospects
                 </a>
                 @endif
 
@@ -403,13 +412,24 @@
 
             <!-- Page Content -->
             <main class="flex-1 p-4 sm:p-6 lg:p-8">
-                @if (session('status'))
+                @if (session('status') || session('success'))
                     <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
                         <div class="flex items-center gap-2 text-green-800">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
-                            <span class="font-medium">{{ session('status') }}</span>
+                            <span class="font-medium">{{ session('status') ?? session('success') }}</span>
+                        </div>
+                    </div>
+                @endif
+
+                @if (session('error'))
+                    <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                        <div class="flex items-center gap-2 text-red-800">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span class="font-medium">{{ session('error') }}</span>
                         </div>
                     </div>
                 @endif
